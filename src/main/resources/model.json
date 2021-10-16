@@ -1,0 +1,224 @@
+{
+  "DescriptorRecord": [
+    {
+      "-DescriptorClass": "1",
+      "DescriptorName": "SARS-CoV-2",
+      "ConceptList": {
+        "Concept": {
+          "ConceptName": {
+            "String": "SARS-CoV-2"
+          },
+          "TermList": {
+            "Term": [
+              {
+                "String": "SARS-CoV-2"
+              },
+              {
+                "String": "Coronavirus Disease 2019 Virus"
+              },
+              {
+                "String": "2019 Novel Coronavirus"
+              },
+              {
+                "String": "2019 Novel Coronaviruses"
+              },
+              {
+                "String": "Coronavirus, 2019 Novel"
+              },
+              {
+                "String": "Novel Coronavirus, 2019"
+              },
+              {
+                "String": "Wuhan Seafood Market Pneumonia Virus"
+              },
+              {
+                "String": "SARS-CoV-2 Virus"
+              },
+              {
+                "String": "SARS CoV 2 Virus"
+              },
+              {
+                "String": "SARS-CoV-2 Viruses"
+              },
+              {
+                "String": "Virus, SARS-CoV-2"
+              },
+              {
+                "String": "2019-nCoV"
+              },
+              {
+                "String": "COVID-19 Virus"
+              },
+              {
+                "String": "COVID 19 Virus"
+              },
+              {
+                "String": "COVID-19 Viruses"
+              },
+              {
+                "String": "Virus, COVID-19"
+              },
+              {
+                "String": "Wuhan Coronavirus"
+              },
+              {
+                "String": "Coronavirus, Wuhan"
+              },
+              {
+                "String": "SARS Coronavirus 2"
+              },
+              {
+                "String": "Coronavirus 2, SARS"
+              },
+              {
+                "String": "Severe Acute Respiratory Syndrome Coronavirus 2"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "-DescriptorClass": "1",
+      "DescriptorName": {
+        "String": "COVID-19"
+      },
+      "ConceptList": {
+        "Concept": [
+          {
+            "ConceptName": {
+              "String": "COVID-19"
+            },
+            "TermList": {
+              "Term": [
+                {
+                  "String": "COVID-19"
+                },
+                {
+                  "String": "COVID 19"
+                },
+                {
+                  "String": "COVID-19 Virus Disease"
+                },
+                {
+                  "String": "COVID 19 Virus Disease"
+                },
+                {
+                  "String": "COVID-19 Virus Diseases"
+                },
+                {
+                  "String": "Disease, COVID-19 Virus"
+                },
+                {
+                  "String": "Virus Disease, COVID-19"
+                },
+                {
+                  "String": "COVID-19 Virus Infection"
+                },
+                {
+                  "String": "COVID 19 Virus Infection"
+                },
+                {
+                  "String": "COVID-19 Virus Infections"
+                },
+                {
+                  "String": "Infection, COVID-19 Virus"
+                },
+                {
+                  "String": "Virus Infection, COVID-19"
+                },
+                {
+                  "String": "2019-nCoV Infection"
+                },
+                {
+                  "String": "2019 nCoV Infection"
+                },
+                {
+                  "String": "2019-nCoV Infections"
+                },
+                {
+                  "String": "Infection, 2019-nCoV"
+                },
+                {
+                  "String": "Coronavirus Disease-19"
+                },
+                {
+                  "String": "Coronavirus Disease 19"
+                },
+                {
+                  "String": "2019 Novel Coronavirus Disease"
+                },
+                {
+                  "String": "2019 Novel Coronavirus Infection"
+                },
+                {
+                  "String": "2019-nCoV Disease"
+                },
+                {
+                  "String": "2019 nCoV Disease"
+                },
+                {
+                  "String": "2019-nCoV Diseases"
+                },
+                {
+                  "String": "Disease, 2019-nCoV"
+                },
+                {
+                  "String": "COVID19"
+                },
+                {
+                  "String": "Coronavirus Disease 2019"
+                },
+                {
+                  "String": "Disease 2019, Coronavirus"
+                },
+                {
+                  "String": "SARS Coronavirus 2 Infection"
+                },
+                {
+                  "String": "SARS-CoV-2 Infection"
+                },
+                {
+                  "String": "Infection, SARS-CoV-2"
+                },
+                {
+                  "String": "SARS CoV 2 Infection"
+                },
+                {
+                  "String": "SARS-CoV-2 Infections"
+                }
+              ]
+            }
+          },
+          {
+            "ConceptName": {
+              "String": "COVID-19 Pandemic"
+            },
+            "TermList": {
+              "Term": [
+                {
+                  "String": "COVID-19 Pandemic"
+                },
+                {
+                  "String": "COVID 19 Pandemic"
+                },
+                {
+                  "String": "COVID-19 Pandemics"
+                },
+                {
+                  "String": "Pandemic, COVID-19"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
+
+
+
+
+
+

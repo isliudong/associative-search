@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: asearch
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://34.96.156.43:3306/hzero_esignature?useUnicode=true&characterEncoding=utf-8&useSSL=false}
+    username: ${SPRING_DATASOURCE_USERNAME:hzero}
+    password: ${SPRING_DATASOURCE_PASSWORD:hzero}
