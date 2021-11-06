@@ -7,14 +7,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author 28415@hand-china.com 2020/11/21 20:32
  */
 @Configuration
 public class ElasticsearchConfig {
+
     @Bean
-    public RestHighLevelClient restHighLevelClient(){
+    public RestHighLevelClient restHighLevelClient(Config config) {
         return new RestHighLevelClient(RestClient.builder(
-                new HttpHost("34.96.156.43", 9200, "http")
+                new HttpHost(config.getHost(), 9200, "http")
         ));
     }
 }
