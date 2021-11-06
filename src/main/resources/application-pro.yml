@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: asearch
@@ -13,5 +14,6 @@ spring:
 as:
   host: 34.96.156.43
   key-index: 1031
-
+server:
+  port: 7070
 
