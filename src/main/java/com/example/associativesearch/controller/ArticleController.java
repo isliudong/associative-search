@@ -30,6 +30,14 @@ public class ArticleController {
     @Autowired
     EsService esService;
 
+    /**
+     * 查询关系
+     *
+     * @param keyword 关键词
+     * @param page    页码
+     * @param size    每页大小
+     * @return DescriptorRecord
+     */
     @GetMapping("/associative/search")
     public Page<DescriptorRecord> getAssociative(String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -42,6 +50,14 @@ public class ArticleController {
                 null, pageRequest);
     }
 
+    /**
+     * 查询文章
+     *
+     * @param keyword 关键词
+     * @param page    页码
+     * @param size    大小
+     * @return Page<Article>
+     */
     @GetMapping("/search")
     public Page<Article> getArticles(String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -63,10 +79,17 @@ public class ArticleController {
                 null, pageRequest);
     }
 
+    /**
+     * 文章详情
+     *
+     * @param id 文章id
+     * @return Article
+     */
     @GetMapping("/{id}")
     public Article getArticles(@PathVariable String id) {
 
-        return esService.searchDetail("articles", new TypeReference<Article>() {}, id);
+        return esService.searchDetail("articles", new TypeReference<Article>() {
+        }, id);
     }
 
 
