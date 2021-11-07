@@ -1,12 +1,14 @@
 package com.example.associativesearch.service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
 import com.example.associativesearch.model.DescriptorRecord;
@@ -17,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -24,6 +28,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
@@ -68,7 +73,7 @@ public class EsService {
         }
     }
 
-    public  <T> void addSourceToEs(List<T> list, String index) {
+    public <T> void addSourceToEs(List<T> list, String index) {
 
         //数据放入es
         BulkRequest bulkRequest = new BulkRequest();
@@ -91,7 +96,7 @@ public class EsService {
 
     }
 
-    public Long getTotal(String index){
+    public Long getTotal(String index) {
         CountRequest countRequest = new CountRequest(index);
         CountResponse count = null;
         try {
@@ -99,7 +104,7 @@ public class EsService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (count==null){
+        if (count == null) {
             return 0L;
         }
         return count.getCount();
@@ -117,6 +122,21 @@ public class EsService {
         required20X(response.status(), "error.es.search");
         SearchHits hits = response.getHits();
         return parse(hits, reference, consumer, pageable);
+    }
+
+    public <T> T searchDetail(String index,
+                              TypeReference<T> reference, String id) {
+        GetRequest articles = new GetRequest(index);
+        articles.id(id);
+        try {
+            GetResponse documentFields = restHighLevelClient.get(articles, RequestOptions.DEFAULT);
+            Map<String, Object> source = documentFields.getSource();
+            source.put("id", documentFields.getId());
+            return objectMapperHolder.objectMapper().readValue(JSON.toJSONString(source), reference);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -150,8 +170,14 @@ public class EsService {
         // 反序列化
         hits.forEach(hit -> {
             try {
-                InputStream hitIn = hit.getSourceRef().streamInput();
-                T result = objectMapperHolder.objectMapper().readValue(hitIn, reference);
+                Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+                hit.getHighlightFields().forEach((k, v) -> {
+                    String hight = Arrays.stream(v.getFragments()).map(Text::string).collect(Collectors.joining(" "));
+                    sourceAsMap.put(k, hight);
+                    sourceAsMap.put("id", hit.getId());
+                });
+                //InputStream hitIn = hit.getSourceRef().streamInput();
+                T result = objectMapperHolder.objectMapper().readValue(JSON.toJSONString(sourceAsMap), reference);
                 if (Objects.nonNull(consumer)) {
                     consumer.accept(hit, result);
                 }
@@ -161,7 +187,7 @@ public class EsService {
                         hit, e.getMessage());
             }
         });
-        return new PageImpl<>(results, pageable,hits.getTotalHits().value);
+        return new PageImpl<>(results, pageable, hits.getTotalHits().value);
     }
 
     /**

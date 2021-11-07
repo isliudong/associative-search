@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Article {
     private String title;
+    private String id;
     private String desc;
     private String content;
 }
