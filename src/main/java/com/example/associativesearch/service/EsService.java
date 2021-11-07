@@ -29,6 +29,9 @@ import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -102,8 +105,8 @@ public class EsService {
         return count.getCount();
     }
 
-    public <T> List<T> search(String index, SearchSourceBuilder builder,
-                              TypeReference<T> reference, BiConsumer<SearchHit, T> consumer) {
+    public <T> Page<T> search(String index, SearchSourceBuilder builder,
+                              TypeReference<T> reference, BiConsumer<SearchHit, T> consumer, Pageable pageable) {
         Objects.requireNonNull(builder);
         // build
         SearchRequest request = new SearchRequest(index);
@@ -113,7 +116,7 @@ public class EsService {
         // judge
         required20X(response.status(), "error.es.search");
         SearchHits hits = response.getHits();
-        return parse(hits, reference, consumer);
+        return parse(hits, reference, consumer, pageable);
     }
 
     /**
@@ -139,9 +142,9 @@ public class EsService {
         T execute() throws E;
     }
 
-    private <T> List<T> parse(SearchHits hits, TypeReference<T> reference, BiConsumer<SearchHit, T> consumer) {
+    private <T> Page<T> parse(SearchHits hits, TypeReference<T> reference, BiConsumer<SearchHit, T> consumer, Pageable pageable) {
         if (hits.getTotalHits().value <= 0) {
-            return Collections.emptyList();
+            return new PageImpl<>(Collections.emptyList());
         }
         List<T> results = new ArrayList<>((int) hits.getTotalHits().value);
         // 反序列化
@@ -158,7 +161,7 @@ public class EsService {
                         hit, e.getMessage());
             }
         });
-        return results;
+        return new PageImpl<>(results, pageable,hits.getTotalHits().value);
     }
 
     /**

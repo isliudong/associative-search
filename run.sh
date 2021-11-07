@@ -97,21 +97,21 @@ fi
 mvn clean package -DskipTests -Dmaven.javadoc.skip=true -Dmaven.springboot.skip=false
 
 # 删除老文件，复制新文件
-rm /data/app/$appName.jar -f
-rm /data/logs/$appName.log -f
-mv ./target/app.jar /data/app/$appName.jar
+rm ./app/$appName.jar -f
+rm ./log/$appName.log -f
+mv ./target/app.jar ./app/$appName.jar
 
 # 确认profile参数,默认为default
 if [ -z "$profile_name" ]; then profile_name='default'; fi
 
 # 启动项目
-cd /data/app|| exit
+cd ./app|| exit
 nohup java -jar -Dspring.cloud.config.enabled=false -Dspring.profiles.active=${profile_name} -Xms512m -Xmx512m \
- /data/app/$appName.jar > /data/logs/$appName.log 2>&1 &
+ ./app/$appName.jar > ./log/$appName.log 2>&1 &
 
 # 添加一点延迟，等待日志文件创建，避免tail失败
 delay
 
 keywords="Started [A-Za-z0-9]\+Application in"
-log_file="/data/logs/$appName.log"
+log_file="./log/$appName.log"
 { sed /"$keywords"/q; kill $!; } < <(exec timeout 1.5m tail -Fn 0 "$log_file")

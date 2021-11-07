@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.associativesearch.config.Config;
-import com.example.associativesearch.model.Article;
 import com.example.associativesearch.model.Concept;
 import com.example.associativesearch.model.DescriptorRecord;
 import com.example.associativesearch.model.Term;
@@ -16,7 +15,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Pageable;
 
 
 //@Component
@@ -42,7 +41,7 @@ public class Task implements ApplicationRunner {
             searchSourceBuilder.from((int) i);
             List<DescriptorRecord> articles = esService.search(index, searchSourceBuilder, new TypeReference<DescriptorRecord>() {
                     },
-                    null);
+                    null, Pageable.ofSize(3)).getContent();
 
             for (DescriptorRecord article : articles) {
                 keys.add(article.getDescriptorName());
