@@ -107,11 +107,11 @@ if [ -z "$profile_name" ]; then profile_name='default'; fi
 # 启动项目
 cd ./app|| exit
 nohup java -jar -Dspring.cloud.config.enabled=false -Dspring.profiles.active=${profile_name} -Xms512m -Xmx512m \
- ./app/$appName.jar > ./log/$appName.log 2>&1 &
+ /projects/$appName/app/$appName.jar > /projects/$appName/log/$appName.log 2>&1 &
 
 # 添加一点延迟，等待日志文件创建，避免tail失败
 delay
 
 keywords="Started [A-Za-z0-9]\+Application in"
-log_file="./log/$appName.log"
+log_file="/projects/$appName/log/$appName.log"
 { sed /"$keywords"/q; kill $!; } < <(exec timeout 1.5m tail -Fn 0 "$log_file")
