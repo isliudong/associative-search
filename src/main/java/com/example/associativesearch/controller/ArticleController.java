@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.collapse.CollapseBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -73,6 +74,7 @@ public class ArticleController {
         PageRequest pageRequest = PageRequest.of(page, size);
         searchSourceBuilder.size(pageRequest.getPageSize());
         searchSourceBuilder.from(pageRequest.getPageNumber());
+        searchSourceBuilder.collapse(new CollapseBuilder("title.keyword"));
         searchSourceBuilder.highlighter(highlightBuilder);
         return esService.search("articles", searchSourceBuilder, new TypeReference<Article>() {
                 },
