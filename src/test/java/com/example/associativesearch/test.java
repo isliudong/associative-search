@@ -2,17 +2,26 @@ package com.example.associativesearch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cn.hutool.core.util.XmlUtil;
 import com.example.associativesearch.model.Article;
 import com.example.associativesearch.model.Concept;
 import com.example.associativesearch.model.DescriptorRecord;
+import com.example.associativesearch.model.Key;
+import com.example.associativesearch.model.KeyDTO;
+import com.example.associativesearch.model.Links;
 import com.example.associativesearch.model.Term;
 import com.example.associativesearch.service.EsService;
 import com.example.associativesearch.service.SourceSearchService;
 import com.example.associativesearch.util.Utils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MoreLikeThisQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
@@ -24,6 +33,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.w3c.dom.Document;
@@ -39,20 +50,44 @@ public class test {
     private Utils utils;
 
     @Test
+    public void test0(){
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        sourceBuilder.size(pageRequest.getPageSize());
+        sourceBuilder.from(pageRequest.getPageNumber());
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        boolQueryBuilder.must(QueryBuilders.termsQuery("id", Arrays.asList("6194ee28f5d6566eec3546f1","6194ee28f5d6566eec3546f2")));
+        boolQueryBuilder.must(QueryBuilders.moreLikeThisQuery(new String[]{"content"},new String[]{"Virus, SARS-CoV-2"},null).minTermFreq(0));
+        sourceBuilder.query(boolQueryBuilder);
+        Page<Key> keys = esService.search("keys", sourceBuilder, new TypeReference<Key>() {
+        }, null, pageRequest);
+
+        Key key = keys.getContent().get(0);
+        KeyDTO keyDTO = new KeyDTO();
+        ArrayList<Links> links = new ArrayList<>();
+        links.add(Links.builder().source(key.getId()).target("6194ee28f5d6566eec3546f1").build());
+        keyDTO.setLinks(links);
+
+        System.out.print(keys.getContent());
+        System.out.print(keyDTO);
+    }
+
+    @Test
     public void test1() {
-        Document document = XmlUtil.readXML("D:\\IdeaProjects\\associative-search\\src\\main\\resources\\desc2021.xml");
+        Document document = XmlUtil.readXML("D:\\IdeaProjects\\associative-search\\src\\main\\resources\\covid-19.xml");
         Element rootElement = XmlUtil.getRootElement(document);
         List<Element> descriptorRecords = XmlUtil.getElements(rootElement, "DescriptorRecord");
-        ArrayList<DescriptorRecord> list = new ArrayList<>();
+        ArrayList<DescriptorRecord> descriptorList = new ArrayList<>();
+        ArrayList<Key> keyList = new ArrayList<>();
 
         for (Element descriptorRecord : descriptorRecords) {
             DescriptorRecord descriptorRecordModel = new DescriptorRecord();
-
 
             Element descriptorName = XmlUtil.getElement(descriptorRecord, "DescriptorName");
             Element name = XmlUtil.getElement(descriptorName, "String");
             String textContent = name.getFirstChild().getTextContent();
             descriptorRecordModel.setDescriptorName(textContent);
+            keyList.add(Key.builder().id(descriptorRecordModel.getId()).content(descriptorRecordModel.getDescriptorName()).build());
 
 
             Element conceptList = XmlUtil.getElement(descriptorRecord, "ConceptList");
@@ -66,6 +101,7 @@ public class test {
                 String conceptName1 = XmlUtil.getElement(conceptName, "String").getFirstChild().getTextContent();
                 conceptModel.setConceptName(conceptName1);
                 conceptListModel.add(conceptModel);
+                keyList.add(Key.builder().id(conceptModel.getId()).content(conceptModel.getConceptName()).build());
 
 
                 Element termList = XmlUtil.getElement(concept, "TermList");
@@ -74,17 +110,19 @@ public class test {
                     Term termModel = new Term();
                     String termName = XmlUtil.getElement(term, "String").getFirstChild().getTextContent();
                     termModel.setString(termName);
+                    keyList.add(Key.builder().id(termModel.getId()).content(termModel.getString()).build());
                     terms.add(termModel);
                 }
                 conceptModel.setTermList(terms);
 
             }
             descriptorRecordModel.setConceptList(conceptListModel);
-            list.add(descriptorRecordModel);
+            descriptorList.add(descriptorRecordModel);
             //System.out.println(descriptorRecordModel);
         }
         //System.out.println(JSON.toJSONString(list));
-        esService.addToEs(list, "test");
+        esService.addToEs(descriptorList, "descriptor-keys");
+        esService.addSourceToEs(keyList, "keys");
     }
 
     @Test
